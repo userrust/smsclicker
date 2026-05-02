@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Жарптица | Отчет за апрель 2026</title>
+    <!-- Chart.js для диаграмм -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8faf9 0%, #f0f5f2 100%);
+            min-height: 100vh;
+            color: #2c3e2c;
+        }
+
+        /* Приветственное окно (полный экран) */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #0a0a2a, #0f0f3a);
+            z-index: 555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s;
+            backdrop-filter: blur(2px);
+        }
+
+        .welcome-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+.welcome-card {
+    text-align: center;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    padding: 3rem 2.5rem;
+    border-radius: 60px;
+    border: 1px solid rgba(255,165,0,0.4);
+    box-shadow: 0 30px 50px rgba(0,0,0,0.3);
+    /* animation: floatGlow 2s infinite;  ← УБРАНО */
+    max-width: 500px;
+    width: 90%;
+}
+
+        @keyframes floatGlow {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(0,100,255,0.3);}
+            50% { transform: scale(1.02); box-shadow: 0 0 40px rgba(0,100,255,0.6);}
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,100,255,0.3);}
+        }
+
+        .welcome-logo {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 1.2rem;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #ffa500;
+            box-shadow: 0 0 25px rgba(255,165,0,0.6);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .welcome-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .welcome-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .welcome-card h1 {
+            font-size: 2rem;
+            color: #ffa500;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px #ffa500;
+        }
+
+        .welcome-card p {
+            color: #ffffffcc;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .start-btn {
+            background: linear-gradient(95deg, #ff8c00, #ff5500);
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(95deg, #ff9f2e, #ff6600);
+        }
+
+        /* Основной контент (скрыт до нажатия) */
+        .main-app {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.7s ease;
+        }
+
+        .main-app.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Верхняя панель */
+        .top-header {
+            background: #0a0a2a;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            border-bottom: 2px solid #ffa500;
+        }
+
+        .studio-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .studio-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid #ffa500;
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+        }
+
+        .studio-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffa500;
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+        }
+
+        .lk-top-btn {
+            background: linear-gradient(145deg, #ffa500, #f29408);
+            color: #000;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .lk-top-btn:hover {
+            transform: translateY(-2px);
+            background: #ffb347;
+        }
+
+        /* Основной контент */
+        .main-content {
+            max-width: 1300px;
+            margin: 40px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .hero {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            border: 1px solid #2e0dc4;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.05);
+        }
+
+        .hero-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #ff8c00;
+            animation: flame 2s infinite;
+        }
+
+        .hero-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes flame {
+            0%,100%{ transform: scale(1); box-shadow: 0 0 15px rgba(255,140,0,0.4);}
+            50%{ transform: scale(1.05); box-shadow: 0 0 30px rgba(255,140,0,0.7);}
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem,5vw,2.3rem);
+            background: linear-gradient(135deg, #ff8c00, #ff5500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Метрики */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-left: 5px solid #1e88e5;
+            transition: 0.2s;
+        }
+        .metric-card2 {
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-left: 5px solid #1e88e5;
+            transition: 0.2s;
+            width: 700px;
+            margin: 0 auto;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-left-color: #ff8c00;
+        }
+
+        .metric-value {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #1e88e5;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #2c3e2c;
+            margin-top: 0.3rem;
+        }
+
+        .metric-note {
+            font-size: 0.7rem;
+            color: gray;
+        }
+
+        /* Секция диаграммы */
+        .chart-section {
+            background: white;
+            border-radius: 30px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            color: #0a0a2a;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 3px;
+            background: linear-gradient(90deg, #1e88e5, #ff8c00);
+            margin: 10px auto;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .pie-wrapper {
+            flex: 1;
+            min-width: 260px;
+            max-width: 340px;
+        }
+
+        .legend-stats {
+            flex: 1;
+            background: #f0f7ff;
+            padding: 1.2rem;
+            border-radius: 24px;
+            border-left: 5px solid #1e88e5;
+        }
+
+        .legend-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px dashed #bbdef5;
+        }
+
+        .badge {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .percentage {
+            font-weight: 700;
+            color: #1e88e5;
+        }
+
+        /* Панель выручки - УСИЛЕННЫЕ ЦИФРЫ */
+        .revenue-panel {
+            background: white;
+            border-radius: 30px;
+            padding: 2rem;
+            margin-top: 1rem;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .revenue-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .revenue-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 28px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .revenue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+        }
+
+        .revenue-card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .revenue-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #5a6b5a;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .revenue-card-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #1e88e5;
+            margin: 0.5rem 0;
+        }
+
+        .revenue-card-percent {
+            font-size: 0.9rem;
+            color: #43a047;
+            font-weight: 600;
+            background: #e8f5e9;
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+        }
+
+        /* Особая карточка общей выручки */
+        .total-revenue-card {
+            background: linear-gradient(135deg, #0a0a2a, #1a1a4a);
+            border-radius: 30px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .total-revenue-card .revenue-card-title {
+            color: #ffa500;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+
+        .total-revenue-card .revenue-card-amount {
+            font-size: 4rem;
+            color: #ffa500;
+            text-shadow: 0 0 15px rgba(255,165,0,0.5);
+        }
+
+        .back-to-main {
+            background: #2c3e2c;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        .back-to-main:hover {
+            background: #ff8c00;
+            transform: scale(1.02);
+        }
+
+        .footer {
+            background: #0a0a2a;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+            border-top: 2px solid #ffa500;
+            color: #ddd;
+        }
+
+        .footer-phone a {
+            color: #ffa500;
+            text-decoration: none;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: #ffa500;
+            text-decoration: none;
+        }
+
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1e88e5;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+            z-index: 100;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 650px) {
+            .main-content { padding: 0 1rem; }
+            .metric-value { font-size: 2rem; }
+            .revenue-card-amount { font-size: 1.8rem; }
+            .total-revenue-card .revenue-card-amount { font-size: 2.5rem; }
+        }
+
+        .timer-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e88e5;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 2000;
+            animation: fadeUp 0.3s;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px);}
+            to { opacity: 1; transform: translateX(-50%) translateY(0);}
+        }
+    </style>
+</head>
+<body>
+
+<!-- ПРИВЕТСТВЕННОЕ ОКНО -->
+<div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-card">
+        <div class="welcome-logo" id="welcomeLogoClick">
+            <img src="https://sun9-25.userapi.com/s/v1/ig2/S5cWb-ExWDAFA_ohsKyDVFY1-EqUCL8qeecq8kcGr8njUYAAXOCQG8ePTAt-NY9YOCdqok_j2RJbAy4w_VJ2fcVb.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,1908x1908&from=bu&cs=1908x0" alt="Жар-птица">
+        </div>
+        <h1>🕊️ Жар-птица</h1>
+        <p>Отчет студии за апрель 2026</p>
+        <button class="start-btn" id="startBtn">✨ Начать ✨</button>
+    </div>
+</div>
+
+<!-- Основное приложение -->
+<div id="mainApp" class="main-app">
+
+    </div>
+
+    <main class="main-content" id="dynamicContent">
+        <div id="defaultReportBlock">
+            <div class="hero">
+                <div class="hero-icon" id="WW2">
+                    <img src="https://sun9-25.userapi.com/s/v1/ig2/S5cWb-ExWDAFA_ohsKyDVFY1-EqUCL8qeecq8kcGr8njUYAAXOCQG8ePTAt-NY9YOCdqok_j2RJbAy4w_VJ2fcVb.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,1908x1908&from=bu&cs=1908x0" alt="logo">
+                </div>
+                <h1>Отчет студии за апрель 2026</h1>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalLessonsVal">0</div>
+                    <div class="metric-label">Занятий проведено</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="count90minVal">0</div>
+                    <div class="metric-label">90-минутных занятий</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="count60minVal">0</div>
+                    <div class="metric-label">60-минутных занятий</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="totalStudentsVal">0</div>
+                    <div class="metric-label">Всего учащихся</div>
+                </div>
+            </div>
+            <div class="metric-card2">
+                <div class="metric-value" id="uniqueStudentsVal">0</div>
+                <div class="metric-label">Уникальных ученика</div>
+                <div class="metric-note">(взгляд ии)</div>
+            </div><br><br>
+
+            <div class="chart-section">
+                <div class="section-title">Соотношение длительности занятий</div>
+                <div class="chart-container">
+                    <div class="pie-wrapper">
+                        <canvas id="durationChart" width="300" height="300"></canvas>
+                    </div>
+                    <div class="legend-stats">
+                        <div id="CLIC" class="legend-item"><span><span class="badge" style="background:#ff0808;"></span> 90 минут</span><span class="percentage" id="perc90">0%</span></div>
+                        <div class="legend-item"><span><span class="badge" style="background:#fcf63d;"></span> 60 минут</span><span class="percentage" id="perc60">0%</span></div>
+                        <div class="legend-item"><span>📌 Всего:</span><strong id="totalLegend">0</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+</div>
+
+<script>
+    // ========= ДАННЫЕ =========
+    const COUNT_60 = 6;
+    const COUNT_90 = 14;
+    const TOTAL_LESSONS = COUNT_60 + COUNT_90;
+    const TOTAL_STUDENTS = 70;
+    const T = 22
+    const REVENUE_REG = 31800;
+    const REVENUE_SUB = 15700;
+    const REVENUE_MASTER = 6500;
+    const TOTAL_REVENUE = REVENUE_REG + REVENUE_SUB + REVENUE_MASTER;
+
+    let durationChart = null;
+    let revenueChart = null;
+    let revenueModeActive = false;
+    let pendingTimer = null;
+
+    const welcomeDiv = document.getElementById('welcomeScreen');
+    const mainAppDiv = document.getElementById('mainApp');
+    const startBtn = document.getElementById('startBtn');
+    const dynamicContainer = document.getElementById('dynamicContent');
+    const welcomeLogo = document.getElementById('welcomeLogoClick');
+    const welcomeLogo2 = document.getElementById('WW2');
+
+    function showToast(msg) {
+        let toast = document.querySelector('.timer-toast');
+        if (toast) toast.remove();
+        toast = document.createElement('div');
+        toast.className = 'timer-toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2800);
+    }
+
+    function initDefaultReport() {
+        document.getElementById('totalLessonsVal').innerText = TOTAL_LESSONS;
+        document.getElementById('count90minVal').innerText = COUNT_90;
+        document.getElementById('count60minVal').innerText = COUNT_60;
+        document.getElementById('totalStudentsVal').innerText = TOTAL_STUDENTS;
+        const uniqueElem = document.getElementById('uniqueStudentsVal');
+        if (uniqueElem) uniqueElem.innerText = T;
+
+        const perc60 = ((COUNT_60 / TOTAL_LESSONS) * 100).toFixed(1);
+        const perc90 = ((COUNT_90 / TOTAL_LESSONS) * 100).toFixed(1);
+        document.getElementById('perc60').innerText = perc60 + '%';
+        document.getElementById('perc90').innerText = perc90 + '%';
+        document.getElementById('totalLegend').innerText = TOTAL_LESSONS;
+
+        const ctxDur = document.getElementById('durationChart').getContext('2d');
+        if (durationChart) durationChart.destroy();
+        durationChart = new Chart(ctxDur, {
+            type: 'pie',
+            data: {
+                labels: ['60 минут', '90 минут'],
+                datasets: [{
+                    data: [COUNT_60, COUNT_90],
+                    backgroundColor: ['#fcf63d', '#ff0808'],
+                    borderColor: '#fff',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} занятий (${((ctx.raw/TOTAL_LESSONS)*100).toFixed(1)}%)` } },
+                    legend: { position: 'bottom', labels: { font: { size: 14 } } }
+                }
+            }
+        });
+        if (pendingTimer) clearTimeout(pendingTimer);
+        revenueModeActive = false;
+    }
+
+    // Функция показа финансового отчета с УВЕЛИЧЕННЫМИ ЦИФРАМИ
+    function switchToRevenuePanel() {
+        if (revenueModeActive) return;
+        revenueModeActive = true;
+
+        const percReg = ((REVENUE_REG / TOTAL_REVENUE) * 100).toFixed(1);
+        const percSub = ((REVENUE_SUB / TOTAL_REVENUE) * 100).toFixed(1);
+        const percMast = ((REVENUE_MASTER / TOTAL_REVENUE) * 100).toFixed(1);
+
+        const revenueHTML = `
+            <div id="revenueBlock" class="revenue-panel">
+
+                <div class="hero">
+                    <div class="hero-icon">
+                        <img src="https://sun9-25.userapi.com/s/v1/ig2/S5cWb-ExWDAFA_ohsKyDVFY1-EqUCL8qeecq8kcGr8njUYAAXOCQG8ePTAt-NY9YOCdqok_j2RJbAy4w_VJ2fcVb.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,1908x1908&from=bu&cs=1908x0" alt="logo">
+                    </div>
+                    <h1>ФИНАНСОВЫЙ ОТЧЕТ</h1>
+                    <p style="color:#1e88e5; font-weight:500;">Выручка студии за апрель 2026</p>
+                </div>
+
+                <!-- ОСОБАЯ КАРТОЧКА ОБЩЕЙ ВЫРУЧКИ -->
+                <div class="total-revenue-card">
+                    <div class="revenue-card-title">ОБЩАЯ ВЫРУЧКА</div>
+                    <div class="revenue-card-amount">${TOTAL_REVENUE.toLocaleString()} ₽</div>
+                    <div style="color:#ffa50080; font-size:0.8rem;">апрель 2026</div>
+                </div>
+
+                <!-- ДЕТАЛИЗАЦИЯ ПО КАТЕГОРИЯМ -->
+                <div class="revenue-stats-grid">
+                    <div class="revenue-card">
+                        <div class="revenue-card-icon">🎨</div>
+                        <div class="revenue-card-title">ОБЫЧНЫЕ ЗАНЯТИЯ</div>
+                        <div class="revenue-card-amount">${REVENUE_REG.toLocaleString()} ₽</div>
+                        <div class="revenue-card-percent">${percReg}% от общей выручки</div>
+                    </div>
+                    <div class="revenue-card">
+                        <div class="revenue-card-icon">📖</div>
+                        <div class="revenue-card-title">АБОНЕМЕНТЫ</div>
+                        <div class="revenue-card-amount">${REVENUE_SUB.toLocaleString()} ₽</div>
+                        <div class="revenue-card-percent">${percSub}% от общей выручки</div>
+                    </div>
+                    <div class="revenue-card">
+                        <div class="revenue-card-icon">✨</div>
+                        <div class="revenue-card-title">МАСТЕР-КЛАССЫ</div>
+                        <div class="revenue-card-amount">${REVENUE_MASTER.toLocaleString()} ₽</div>
+                        <div class="revenue-card-percent">${percMast}% от общей выручки</div>
+                    </div>
+                </div>
+
+                <!-- ДИАГРАММА -->
+                <div class="chart-section">
+                    <div class="section-title">💰 Распределение выручки</div>
+                    <div class="chart-container">
+                        <div class="pie-wrapper">
+                            <canvas id="revenueChartCanvas" width="300" height="300"></canvas>
+                        </div>
+                        <div class="legend-stats">
+                            <div class="legend-item"><span><span class="badge" style="background:#e53935;"></span> Обычные занятия</span><span class="percentage">${percReg}%</span></div>
+                            <div class="legend-item"><span><span class="badge" style="background:#1e88e5;"></span> Абонементы</span><span class="percentage">${percSub}%</span></div>
+                            <div class="legend-item"><span><span class="badge" style="background:#43a047;"></span> Мастер-классы</span><span class="percentage">${percMast}%</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        dynamicContainer.innerHTML = revenueHTML;
+
+        const revCtx = document.getElementById('revenueChartCanvas').getContext('2d');
+        if (revenueChart) revenueChart.destroy();
+        revenueChart = new Chart(revCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Обычные занятия', 'Абонементы', 'Мастер-классы'],
+                datasets: [{
+                    data: [REVENUE_REG, REVENUE_SUB, REVENUE_MASTER],
+                    backgroundColor: ['#e53935', '#1e88e5', '#43a047'],
+                    borderColor: '#ffffff',
+                    borderWidth: 3,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw.toLocaleString()} ₽ (${((ctx.raw/TOTAL_REVENUE)*100).toFixed(1)}%)` } },
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        const backBtn = document.getElementById('backToMainBtn');
+        backBtn.addEventListener('click', () => {
+            if (pendingTimer) clearTimeout(pendingTimer);
+            revenueModeActive = false;
+            restoreMainReport();
+        });
+    }
+
+    function restoreMainReport() {
+        dynamicContainer.innerHTML = `
+            <div id="defaultReportBlock">
+                <div class="hero">
+                    <div class="hero-icon"><img src="https://sun9-25.userapi.com/s/v1/ig2/S5cWb-ExWDAFA_ohsKyDVFY1-EqUCL8qeecq8kcGr8njUYAAXOCQG8ePTAt-NY9YOCdqok_j2RJbAy4w_VJ2fcVb.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,1080x1080,1280x1280,1440x1440,1908x1908&from=bu&cs=1908x0" alt="logo"></div>
+                    <h1>Отчет студии за апрель 2026</h1>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card"><div class="metric-value" id="totalLessonsVal">${TOTAL_LESSONS}</div><div class="metric-label">Занятий проведено</div></div>
+                    <div class="metric-card"><div class="metric-value" id="count90minVal">${COUNT_90}</div><div class="metric-label">90-минутных занятий</div></div>
+                    <div class="metric-card"><div class="metric-value" id="count60minVal">${COUNT_60}</div><div class="metric-label">60-минутных занятий</div></div>
+                    <div class="metric-card"><div class="metric-value" id="totalStudentsVal">${TOTAL_STUDENTS}</div><div class="metric-label">Всего учащихся</div></div>
+                </div>
+                <div class="metric-card2">
+                    <div class="metric-value" id="uniqueStudentsVal">ЕСТЬ</div>
+                    <div class="metric-label">Уникальных учеников ()</div>
+                </div>
+                <div class="chart-section">
+                    <div class="section-title">Соотношение длительности занятий</div>
+                    <div class="chart-container">
+                        <div class="pie-wrapper"><canvas id="durationChart" width="300" height="300"></canvas></div>
+                        <div class="legend-stats">
+                            <div class="legend-item"><span><span class="badge" style="background:#ff0808;"></span> 90 минут</span><span class="percentage" id="perc90">${((COUNT_90/TOTAL_LESSONS)*100).toFixed(1)}%</span></div>
+                            <div class="legend-item"><span><span class="badge" style="background:#fcf63d;"></span> 60 минут</span><span class="percentage" id="perc60">${((COUNT_60/TOTAL_LESSONS)*100).toFixed(1)}%</span></div>
+                            <div class="legend-item"><span>📌 Всего:</span><strong>${TOTAL_LESSONS}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        const ctxDur = document.getElementById('durationChart').getContext('2d');
+        if (durationChart) durationChart.destroy();
+        durationChart = new Chart(ctxDur, {
+            type: 'pie',
+            data: { labels: ['60 минут', '90 минут'], datasets: [{ data: [COUNT_60, COUNT_90], backgroundColor: ['#fcf63d', '#ff0808'], borderWidth: 3 }] },
+            options: { responsive: true, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} занятий` } } } }
+        });
+    }
+
+    function openRevenueAfterDelay(delayMs) {
+        if (pendingTimer) clearTimeout(pendingTimer);
+        pendingTimer = setTimeout(() => {
+            mainAppDiv.style.opacity = '1';
+            switchToRevenuePanel();
+            pendingTimer = null;
+        }, delayMs);
+    }
+
+    startBtn.addEventListener('click', () => {
+        welcomeDiv.classList.add('hide');
+        mainAppDiv.classList.add('visible');
+        setTimeout(() => { welcomeDiv.style.display = 'none'; }, 600);
+        initDefaultReport();
+    });
+
+    if (welcomeLogo2) {
+        welcomeLogo2.addEventListener('click', () => {
+            welcomeDiv.classList.add('hide');
+            mainAppDiv.classList.add('visible');
+            setTimeout(() => { welcomeDiv.style.display = 'none'; }, 600);
+            initDefaultReport();
+            openRevenueAfterDelay(10000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const aboutLink = document.getElementById('aboutLink');
+        if (aboutLink) aboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            alert("Арт-студия «Жар-птица»\nАдрес: просп. Строителей, 12/15\nТелефон: +7 (909) 424-70-91");
+        });
+    });
+
+    window.addEventListener('scroll', () => {
+        const scrollBtn = document.querySelector('.scroll-top');
+        if (scrollBtn) scrollBtn.classList.toggle('visible', window.scrollY > 300);
+    });
+</script>
+</body>
+</html>
